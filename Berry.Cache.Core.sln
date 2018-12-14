@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2047
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Berry.Cache.Core", "Berry.Cache.Core\Berry.Cache.Core.csproj", "{1F0D4E6E-FFF8-4914-89F3-53198463D5A3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTest", "UnitTest\UnitTest.csproj", "{FB62F08D-F8AC-4D50-AB5B-1299BA8B1347}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1F0D4E6E-FFF8-4914-89F3-53198463D5A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F0D4E6E-FFF8-4914-89F3-53198463D5A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F0D4E6E-FFF8-4914-89F3-53198463D5A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F0D4E6E-FFF8-4914-89F3-53198463D5A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB62F08D-F8AC-4D50-AB5B-1299BA8B1347}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB62F08D-F8AC-4D50-AB5B-1299BA8B1347}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB62F08D-F8AC-4D50-AB5B-1299BA8B1347}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB62F08D-F8AC-4D50-AB5B-1299BA8B1347}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D762B5A9-A70C-4D7B-8E1F-C6413A55A804}
+	EndGlobalSection
+EndGlobal
