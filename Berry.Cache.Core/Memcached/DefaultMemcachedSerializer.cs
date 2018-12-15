@@ -1,20 +1,17 @@
-﻿using System;
-using Berry.Cache.Core.Base;
-using Newtonsoft.Json;
-using StackExchange.Redis;
+﻿using Newtonsoft.Json;
 
-namespace Berry.Cache.Core.Redis
+namespace Berry.Cache.Core.Memcached
 {
-    public class DefaultRedisCacheSerializer
+    public class DefaultMemcachedSerializer
     {
         /// <summary>
         /// 反序列化
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public T Deserialize<T>(RedisValue value)
+        public T Deserialize<T>(string value)
         {
-            if (!value.IsNullOrEmpty)
+            if (!string.IsNullOrEmpty(value))
             {
                 return JsonConvert.DeserializeObject<T>(value);
             }

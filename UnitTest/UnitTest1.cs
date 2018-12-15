@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Berry.Cache.Core;
 using Berry.Cache.Core.Base;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -44,6 +45,40 @@ namespace UnitTest
             string data = CacheFactory.GetCache().Get(key).ToString();
             Console.WriteLine(data);
         }
+
+        [TestMethod]
+        public void TestMethod3()
+        {
+            string key = "test_list";
+
+            List<TestModel> list = new List<TestModel>
+            {
+                new TestModel
+                {
+                    Id = 1,
+                    Name = "dsx1",
+                    Phone = "13588886666",
+                    AddTime = DateTime.Now
+                },
+                new TestModel
+                {
+                    Id = 2,
+                    Name = "dsx2",
+                    Phone = "13588886666",
+                    AddTime = DateTime.Now
+                }
+            };
+
+            bool isSucc = CacheFactory.GetCache().Add(key, list);
+            Assert.IsTrue(isSucc);
+
+            bool exist = CacheFactory.GetCache().Exists(key);
+            Assert.IsTrue(exist);
+
+            List<TestModel> data = CacheFactory.GetCache().Get<List<TestModel>>(key);
+            Assert.IsTrue(data.Count > 0);
+        }
+
 
         private class TestModel
         {

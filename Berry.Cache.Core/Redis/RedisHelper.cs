@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Berry.Cache.Core.Base;
 using StackExchange.Redis;
 
 namespace Berry.Cache.Core.Redis
@@ -24,7 +25,7 @@ namespace Berry.Cache.Core.Redis
         /// <summary>
         /// 序列化操作类
         /// </summary>
-        private readonly IRedisCacheSerializer _serializer;
+        private readonly DefaultRedisCacheSerializer _serializer;
 
         #region 构造函数
 

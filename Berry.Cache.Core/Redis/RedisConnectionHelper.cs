@@ -10,11 +10,6 @@ namespace Berry.Cache.Core.Redis
     public static class RedisConnectionHelper
     {
         /// <summary>
-        /// 系统自定义Key前缀
-        /// </summary>
-        public static readonly string SysCustomKey = "";//ConfigHelper.GetValue("RedisSysCustomKeyPrefix");
-
-        /// <summary>
         /// 127.0.0.1:6379,allowadmin=true
         /// </summary>
         private static readonly string RedisConnectionString = "127.0.0.1:6379,allowadmin=true";//ConfigHelper.GetValue("RedisExchangeHosts");

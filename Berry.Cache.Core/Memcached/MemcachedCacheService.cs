@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Berry.Cache.Core.Base;
+using Enyim.Caching;
+using Enyim.Caching.Memcached;
 
-namespace Berry.Cache.Core.Redis
+namespace Berry.Cache.Core.Memcached
 {
     /// <summary>
-    /// Redis缓存实现
+    /// Memcached实现
     /// </summary>
-    public class RedisCacheService : BaseCacheService, ICacheService
+    public class MemcachedCacheService : BaseCacheService, ICacheService
     {
         #region 实例
         /// <summary>
@@ -17,26 +19,41 @@ namespace Berry.Cache.Core.Redis
         /// </summary>
         private static readonly ICacheService CacheService = null;
         /// <summary>
-        /// Redis操作帮助类
+        /// 缓存Key集合
         /// </summary>
-        private static readonly RedisHelper redisHelper = new RedisHelper();
+        private static List<string> keyList = new List<string>();
+        /// <summary>
+        /// Memcached操作帮助类
+        /// </summary>
+        private static readonly MemcachedHelper memcachedHelper = new MemcachedHelper();
+        /// <summary>
+        /// 客户端
+        /// </summary>
+        private static MemcachedClient memcachedClient = memcachedHelper.CreateServer();
+        /// <summary>
+        /// 序列化操作类
+        /// </summary>
+        private readonly DefaultMemcachedSerializer _serializer = new DefaultMemcachedSerializer();
 
-        static RedisCacheService()
+        static MemcachedCacheService()
         {
-            CacheService = new RedisCacheService();
+            CacheService = new MemcachedCacheService();
         }
 
+        /// <summary>
+        /// 组装带前缀的缓存Key
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        protected override string GetCacheKey(string key)
+        {
+            key = base.GetCacheKey(key);
+            if (!keyList.Contains(key)) keyList.Add(key);
+            return key;
+        }
         #endregion
 
         #region 基础操作
-
-        /// <summary>
-        /// 默认缓存Key前缀
-        /// </summary>
-        protected override string DefaultCacheKeyPrefix
-        {
-            get { return "Default"; }
-        }
 
         /// <summary>
         /// 获取缓存操作实例
@@ -47,20 +64,9 @@ namespace Berry.Cache.Core.Redis
             return CacheService;
         }
 
-        /// <summary>
-        /// 组装带前缀的缓存Key
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        protected override string GetCacheKey(string key)
-        {
-            return string.Format("{0}:{1}", this.DefaultCacheKeyPrefix, key);
-        }
-
         #endregion
 
         #region 验证缓存项是否存在
-
         /// <summary>
         /// 验证缓存项是否存在
         /// </summary>
@@ -68,7 +74,7 @@ namespace Berry.Cache.Core.Redis
         /// <returns></returns>
         public bool Exists(string key)
         {
-            return redisHelper.KeyExists(this.GetCacheKey(key));
+            return memcachedClient.Get(this.GetCacheKey(key)) != null;
         }
 
         /// <summary>
@@ -95,7 +101,8 @@ namespace Berry.Cache.Core.Redis
         /// <returns></returns>
         public bool Add(string key, object value)
         {
-            return redisHelper.StringSet(this.GetCacheKey(key), value, DefaultExpireTime.TimeOfDay);
+            string data = _serializer.Serialize(value);
+            return memcachedClient.Store(StoreMode.Set, this.GetCacheKey(key), data, DefaultExpireTime);
         }
 
         /// <summary>
@@ -123,7 +130,9 @@ namespace Berry.Cache.Core.Redis
         /// <returns></returns>
         public bool Add(string key, object value, TimeSpan? expiresSliding, TimeSpan? expiressAbsoulte)
         {
-            return redisHelper.StringSet(key, value, expiresSliding ?? expiressAbsoulte ?? DefaultExpireTime.TimeOfDay);
+            TimeSpan time = expiresSliding ?? expiressAbsoulte ?? DefaultExpireTime.TimeOfDay;
+            string data = _serializer.Serialize(value);
+            return memcachedClient.Store(StoreMode.Set, this.GetCacheKey(key), data, time);
         }
 
         /// <summary>
@@ -153,20 +162,20 @@ namespace Berry.Cache.Core.Redis
         /// <returns></returns>
         public bool Add(string key, object value, TimeSpan? expiresIn, bool isSliding = false)
         {
+            string data = _serializer.Serialize(value);
             if (!isSliding)
             {
-                return redisHelper.StringSet(this.GetCacheKey(key), value, expiresIn);
+                return memcachedClient.Store(StoreMode.Set, this.GetCacheKey(key), data, expiresIn ?? DefaultExpireTime.TimeOfDay);
             }
             else
             {
                 if (this.Exists(key))
                 {
-                    this.Replace(key, value);
-                    return redisHelper.KeyExpire(this.GetCacheKey(key), expiresIn);
+                    return memcachedClient.Store(StoreMode.Replace, this.GetCacheKey(key), data, expiresIn ?? DefaultExpireTime.TimeOfDay);
                 }
                 else
                 {
-                    return redisHelper.StringSet(this.GetCacheKey(key), value, expiresIn);
+                    return memcachedClient.Store(StoreMode.Set, this.GetCacheKey(key), data, expiresIn ?? DefaultExpireTime.TimeOfDay);
                 }
             }
         }
@@ -199,7 +208,7 @@ namespace Berry.Cache.Core.Redis
         /// <returns></returns>
         public bool Remove(string key)
         {
-            return redisHelper.KeyDelete(this.GetCacheKey(key));
+            return memcachedClient.Remove(this.GetCacheKey(key));
         }
 
         /// <summary>
@@ -249,8 +258,7 @@ namespace Berry.Cache.Core.Redis
         /// </summary>
         public void RemoveAll()
         {
-            List<string> keys = redisHelper.GetKeys();
-            this.RemoveAll(keys);
+            memcachedClient.FlushAll();
         }
 
         /// <summary>
@@ -276,8 +284,8 @@ namespace Berry.Cache.Core.Redis
         /// <returns></returns>
         public T Get<T>(string key) where T : class
         {
-            T value = redisHelper.StringGet<T>(this.GetCacheKey(key));
-            return value;
+            string res = memcachedClient.Get<string>(this.GetCacheKey(key));
+            return _serializer.Deserialize<T>(res);
         }
 
         /// <summary>
@@ -300,7 +308,7 @@ namespace Berry.Cache.Core.Redis
         /// <returns></returns>
         public object Get(string key)
         {
-            object o = redisHelper.StringGet(this.GetCacheKey(key));
+            object o = memcachedClient.Get(this.GetCacheKey(key));
             return o;
         }
 
@@ -364,10 +372,10 @@ namespace Berry.Cache.Core.Redis
         /// <returns></returns>
         public bool Replace(string key, object value)
         {
-            if (redisHelper.KeyExists(this.GetCacheKey(key)))
+            if (this.Exists(key))
             {
-                redisHelper.KeyDelete(this.GetCacheKey(key));
-                return this.Add(key, value);
+                string data = _serializer.Serialize(value);
+                return memcachedClient.Store(StoreMode.Replace, this.GetCacheKey(key), data, DefaultExpireTime);
             }
             else
             {
@@ -399,10 +407,11 @@ namespace Berry.Cache.Core.Redis
         /// <returns></returns>
         public bool Replace(string key, object value, TimeSpan? expiresSliding, TimeSpan? expiressAbsoulte)
         {
-            if (redisHelper.KeyExists(this.GetCacheKey(key)))
+            if (this.Exists(key))
             {
-                redisHelper.KeyDelete(this.GetCacheKey(key));
-                return this.Add(key, value, expiresSliding, expiressAbsoulte);
+                TimeSpan time = expiresSliding ?? expiressAbsoulte ?? DefaultExpireTime.TimeOfDay;
+                string data = _serializer.Serialize(value);
+                return memcachedClient.Store(StoreMode.Replace, this.GetCacheKey(key), data, time);
             }
             else
             {
@@ -436,10 +445,10 @@ namespace Berry.Cache.Core.Redis
         /// <returns></returns>
         public bool Replace(string key, object value, TimeSpan? expiresIn, bool isSliding = false)
         {
-            if (redisHelper.KeyExists(this.GetCacheKey(key)))
+            if (this.Exists(key))
             {
-                redisHelper.KeyDelete(this.GetCacheKey(key));
-                return this.Add(key, value, expiresIn, isSliding);
+                string data = _serializer.Serialize(value);
+                return memcachedClient.Store(StoreMode.Replace, this.GetCacheKey(key), data, expiresIn ?? DefaultExpireTime.TimeOfDay);
             }
             else
             {
