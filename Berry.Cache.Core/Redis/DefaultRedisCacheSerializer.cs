@@ -1,5 +1,4 @@
 ﻿using System;
-using Berry.Cache.Core.Base;
 using Newtonsoft.Json;
 using StackExchange.Redis;
 

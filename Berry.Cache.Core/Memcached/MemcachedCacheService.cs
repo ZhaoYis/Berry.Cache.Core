@@ -115,8 +115,7 @@ namespace Berry.Cache.Core.Memcached
         {
             return Task.Factory.StartNew(() =>
             {
-                this.Add(key, value);
-                return true;
+                return this.Add(key, value);
             });
         }
 
@@ -147,8 +146,7 @@ namespace Berry.Cache.Core.Memcached
         {
             return Task.Factory.StartNew(() =>
             {
-                this.Add(key, value, expiresSliding, expiressAbsoulte);
-                return true;
+                return this.Add(key, value, expiresSliding, expiressAbsoulte);
             });
         }
 
@@ -192,8 +190,7 @@ namespace Berry.Cache.Core.Memcached
         {
             return Task.Factory.StartNew(() =>
             {
-                this.Add(key, value, expiresIn, isSliding);
-                return true;
+                return this.Add(key, value, expiresIn, isSliding);
             });
         }
 
