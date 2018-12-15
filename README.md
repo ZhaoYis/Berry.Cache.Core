@@ -2,7 +2,7 @@
 ```
 使用方式如下：
 
-1、缓存字符串
+##1、缓存字符串
 string key = "dsx";
 
 bool isSucc = CacheFactory.GetCache().Add(key, "Hello World！");
@@ -18,12 +18,12 @@ Console.WriteLine(data);
 string key = "test";
 
 TestModel test = new TestModel
-{
-            Id = 1,
-            Name = "dsx",
-            Phone = "13588886666",
-            AddTime = DateTime.Now
-};
+            {
+                Id = 1,
+                Name = "dsx",
+                Phone = "13588886666",
+                AddTime = DateTime.Now
+            };
 bool isSucc = CacheFactory.GetCache().Add(key, test);
 Assert.IsTrue(isSucc);
 
