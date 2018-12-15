@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Berry.Cache.Core.Base;
 
@@ -34,7 +35,7 @@ namespace Berry.Cache.Core.Redis
         /// </summary>
         protected override string DefaultCacheKeyPrefix
         {
-            get { return "Default:"; }
+            get { return "Default"; }
         }
 
         /// <summary>
@@ -67,7 +68,7 @@ namespace Berry.Cache.Core.Redis
         /// <returns></returns>
         public bool Exists(string key)
         {
-            return redisHelper.KeyExists(key);
+            return redisHelper.KeyExists(this.GetCacheKey(key));
         }
 
         /// <summary>
@@ -152,7 +153,22 @@ namespace Berry.Cache.Core.Redis
         /// <returns></returns>
         public bool Add(string key, object value, TimeSpan? expiresIn, bool isSliding = false)
         {
-            throw new NotImplementedException();
+            if (!isSliding)
+            {
+                return redisHelper.StringSet(this.GetCacheKey(key), value, expiresIn);
+            }
+            else
+            {
+                if (redisHelper.KeyExists(this.GetCacheKey(key)))
+                {
+                    this.Replace(key, value);
+                    return redisHelper.KeyExpire(this.GetCacheKey(key), expiresIn);
+                }
+                else
+                {
+                    return redisHelper.StringSet(this.GetCacheKey(key), value, expiresIn);
+                }
+            }
         }
 
         /// <summary>
@@ -183,7 +199,7 @@ namespace Berry.Cache.Core.Redis
         /// <returns></returns>
         public bool Remove(string key)
         {
-            throw new NotImplementedException();
+            return redisHelper.KeyDelete(this.GetCacheKey(key));
         }
 
         /// <summary>
@@ -206,7 +222,13 @@ namespace Berry.Cache.Core.Redis
         /// <returns></returns>
         public void RemoveAll(List<string> keys)
         {
-            throw new NotImplementedException();
+            if (keys != null && keys.Any())
+            {
+                foreach (string key in keys)
+                {
+                    this.Remove(key);
+                }
+            }
         }
 
         /// <summary>
@@ -227,7 +249,8 @@ namespace Berry.Cache.Core.Redis
         /// </summary>
         public void RemoveAll()
         {
-            throw new NotImplementedException();
+            List<string> keys = redisHelper.GetKeys();
+            this.RemoveAll(keys);
         }
 
         /// <summary>
@@ -253,7 +276,8 @@ namespace Berry.Cache.Core.Redis
         /// <returns></returns>
         public T Get<T>(string key) where T : class
         {
-            throw new NotImplementedException();
+            T value = redisHelper.StringGet<T>(this.GetCacheKey(key));
+            return value;
         }
 
         /// <summary>
@@ -276,7 +300,8 @@ namespace Berry.Cache.Core.Redis
         /// <returns></returns>
         public object Get(string key)
         {
-            throw new NotImplementedException();
+            object o = redisHelper.StringGet(this.GetCacheKey(key));
+            return o;
         }
 
         /// <summary>
@@ -299,7 +324,19 @@ namespace Berry.Cache.Core.Redis
         /// <returns></returns>
         public Dictionary<string, object> GetAll(List<string> keys)
         {
-            throw new NotImplementedException();
+            Dictionary<string, object> res = new Dictionary<string, object>();
+            if (keys != null && keys.Any())
+            {
+                foreach (string key in keys)
+                {
+                    object o = this.Get(key);
+                    if (!res.ContainsKey(this.GetCacheKey(key)))
+                    {
+                        res.Add(this.GetCacheKey(key), o);
+                    }
+                }
+            }
+            return res;
         }
 
         /// <summary>
@@ -327,7 +364,15 @@ namespace Berry.Cache.Core.Redis
         /// <returns></returns>
         public bool Replace(string key, object value)
         {
-            throw new NotImplementedException();
+            if (redisHelper.KeyExists(this.GetCacheKey(key)))
+            {
+                redisHelper.KeyDelete(this.GetCacheKey(key));
+                return this.Add(key, value);
+            }
+            else
+            {
+                return this.Add(key, value);
+            }
         }
 
         /// <summary>
@@ -354,7 +399,15 @@ namespace Berry.Cache.Core.Redis
         /// <returns></returns>
         public bool Replace(string key, object value, TimeSpan? expiresSliding, TimeSpan? expiressAbsoulte)
         {
-            throw new NotImplementedException();
+            if (redisHelper.KeyExists(this.GetCacheKey(key)))
+            {
+                redisHelper.KeyDelete(this.GetCacheKey(key));
+                return this.Add(key, value, expiresSliding, expiressAbsoulte);
+            }
+            else
+            {
+                return this.Add(key, value, expiresSliding, expiressAbsoulte);
+            }
         }
 
         /// <summary>
@@ -383,7 +436,15 @@ namespace Berry.Cache.Core.Redis
         /// <returns></returns>
         public bool Replace(string key, object value, TimeSpan? expiresIn, bool isSliding = false)
         {
-            throw new NotImplementedException();
+            if (redisHelper.KeyExists(this.GetCacheKey(key)))
+            {
+                redisHelper.KeyDelete(this.GetCacheKey(key));
+                return this.Add(key, value, expiresIn, isSliding);
+            }
+            else
+            {
+                return this.Add(key, value, expiresIn, isSliding);
+            }
         }
 
         /// <summary>
