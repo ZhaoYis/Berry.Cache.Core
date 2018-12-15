@@ -2,7 +2,7 @@
 ```
 使用方式如下：
 
-##1、缓存字符串
+## 1、缓存字符串
 string key = "dsx";
 
 bool isSucc = CacheFactory.GetCache().Add(key, "Hello World！");
