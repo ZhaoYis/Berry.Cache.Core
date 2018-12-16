@@ -236,6 +236,63 @@ namespace Berry.Cache.Core.Redis
 
         #endregion String
 
+        #region 发布订阅
+
+        /// <summary>
+        /// 订阅消息
+        /// </summary>
+        /// <param name="subChannel">通道名称</param>
+        /// <param name="handler">处理消息</param>
+        public void Subscribe(string subChannel, Action<RedisChannel, RedisValue> handler = null)
+        {
+            ISubscriber sub = _conn.GetSubscriber();
+            sub.Subscribe(subChannel, (channel, message) =>
+            {
+                if (handler == null)
+                {
+                    Console.WriteLine("通道：" + subChannel + " 订阅收到消息===>" + message);
+                }
+                else
+                {
+                    handler(channel, message);
+                }
+            });
+        }
+
+        /// <summary>
+        /// 发布消息
+        /// </summary>
+        /// <typeparam name="T">消息类型</typeparam>
+        /// <param name="channel">通道名称</param>
+        /// <param name="msg">消息</param>
+        /// <returns></returns>
+        public long Publish<T>(string channel, T msg)
+        {
+            ISubscriber sub = _conn.GetSubscriber();
+            return sub.Publish(channel, _serializer.Serialize(msg));
+        }
+
+        /// <summary>
+        /// 取消订阅
+        /// </summary>
+        /// <param name="channel">通道名称</param>
+        public void Unsubscribe(string channel)
+        {
+            ISubscriber sub = _conn.GetSubscriber();
+            sub.Unsubscribe(channel);
+        }
+
+        /// <summary>
+        /// 取消全部订阅
+        /// </summary>
+        public void UnsubscribeAll()
+        {
+            ISubscriber sub = _conn.GetSubscriber();
+            sub.UnsubscribeAll();
+        }
+
+        #endregion 发布订阅
+
         #region Key管理
 
         /// <summary>

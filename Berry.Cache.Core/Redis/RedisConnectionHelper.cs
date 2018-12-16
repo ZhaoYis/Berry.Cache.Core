@@ -9,10 +9,32 @@ namespace Berry.Cache.Core.Redis
     /// </summary>
     public static class RedisConnectionHelper
     {
+        #region 连接字符串配置项
+        //abortConnect={bool} 如果是true，Connect方法在链接不到有效的服务器的时候不会创建一个链接实例
+        //allowAdmin={bool}  启用被认定为是有风险的一些命令
+        //channelPrefix={string} 所有的发布订阅频道的前缀
+        //connectRetry={int} 在初始化 Connect 失败的时候重新尝试进行链接的次数
+        //connectTimeout={int} 链接超时时间(ms)
+        //configChannel={string} 用于传递配置改变信息的广播频道
+        //defaultDatabase={int} 默认的数据库序数, 从1到-1
+        //keepAlive={int} 发送信息以保持sockets在线的间隔时间
+        //name={string} 在redis内用于判别不同链接客户端
+        //password={string} 密码
+        //proxy={proxy type} 代理类型(如果有的话); 如 "twemproxy"
+        //resolveDns={bool} 指定DNS解析服务器， 推荐明确指出，而不是采用默认的
+        //serviceName ={string} 当前没有实现（用于sentinel模式）
+        //ssl={bool} 使用SSL加密
+        //sslHost={string} 在服务器证书上注册SSL主机身份标识
+        //syncTimeout={int} 同步操作的超时时间(ms)
+        //tiebreaker={string} 多主机服务器部署情形下中用于选择出master服务的Key
+        //version={string} Redis版本(用于从服务器获取不到此信息时)
+        //writeBuffer={int} 输出缓存大小 
+        #endregion
+
         /// <summary>
-        /// 127.0.0.1:6379,allowadmin=true
+        /// 连接字符串
         /// </summary>
-        private static readonly string RedisConnectionString = "127.0.0.1:6379,allowadmin=true";//ConfigHelper.GetValue("RedisExchangeHosts");
+        private static readonly string RedisConnectionString = "127.0.0.1:6379,allowadmin=true,abortConnect=true,connectRetry=5";
 
         /// <summary>
         /// 锁
@@ -56,7 +78,7 @@ namespace Berry.Cache.Core.Redis
         }
 
         /// <summary>
-        /// 缓存获取
+        /// 连接器
         /// </summary>
         /// <param name="connectionString"></param>
         /// <returns></returns>
@@ -69,10 +91,35 @@ namespace Berry.Cache.Core.Redis
             return ConnectionCache[connectionString];
         }
 
+        /// <summary>
+        /// 获取Redis连接对象
+        /// </summary>
+        /// <param name="connectionString"></param>
+        /// <returns></returns>
         private static ConnectionMultiplexer GetManager(string connectionString = null)
         {
             connectionString = connectionString ?? RedisConnectionString;
             ConnectionMultiplexer connect = ConnectionMultiplexer.Connect(connectionString);
+
+            //注册事件
+            connect.ConnectionFailed += MuxerConnectionFailed;
+            connect.ConnectionRestored += MuxerConnectionRestored;
+            connect.ErrorMessage += MuxerErrorMessage;
+            connect.ConfigurationChanged += MuxerConfigurationChanged;
+            connect.HashSlotMoved += MuxerHashSlotMoved;
+            connect.InternalError += MuxerInternalError;
+
+            return connect;
+        }
+
+        /// <summary>
+        /// 获取Redis连接对象
+        /// </summary>
+        /// <param name="configuration"></param>
+        /// <returns></returns>
+        private static ConnectionMultiplexer GetManager(ConfigurationOptions configuration)
+        {
+            ConnectionMultiplexer connect = ConnectionMultiplexer.Connect(configuration);
 
             //注册事件
             connect.ConnectionFailed += MuxerConnectionFailed;
