@@ -129,7 +129,7 @@ namespace Berry.Cache.Core.Memcached
         /// <returns></returns>
         public bool Add(string key, object value, TimeSpan? expiresSliding, TimeSpan? expiressAbsoulte)
         {
-            TimeSpan time = expiresSliding ?? expiressAbsoulte ?? DefaultExpireTime.TimeOfDay;
+            TimeSpan time = expiresSliding ?? expiressAbsoulte ?? DefaultExpireTime;
             string data = _serializer.Serialize(value);
             return memcachedClient.Store(StoreMode.Set, this.GetCacheKey(key), data, time);
         }
@@ -163,17 +163,17 @@ namespace Berry.Cache.Core.Memcached
             string data = _serializer.Serialize(value);
             if (!isSliding)
             {
-                return memcachedClient.Store(StoreMode.Set, this.GetCacheKey(key), data, expiresIn ?? DefaultExpireTime.TimeOfDay);
+                return memcachedClient.Store(StoreMode.Set, this.GetCacheKey(key), data, expiresIn ?? DefaultExpireTime);
             }
             else
             {
                 if (this.Exists(key))
                 {
-                    return memcachedClient.Store(StoreMode.Replace, this.GetCacheKey(key), data, expiresIn ?? DefaultExpireTime.TimeOfDay);
+                    return memcachedClient.Store(StoreMode.Replace, this.GetCacheKey(key), data, expiresIn ?? DefaultExpireTime);
                 }
                 else
                 {
-                    return memcachedClient.Store(StoreMode.Set, this.GetCacheKey(key), data, expiresIn ?? DefaultExpireTime.TimeOfDay);
+                    return memcachedClient.Store(StoreMode.Set, this.GetCacheKey(key), data, expiresIn ?? DefaultExpireTime);
                 }
             }
         }
@@ -406,7 +406,7 @@ namespace Berry.Cache.Core.Memcached
         {
             if (this.Exists(key))
             {
-                TimeSpan time = expiresSliding ?? expiressAbsoulte ?? DefaultExpireTime.TimeOfDay;
+                TimeSpan time = expiresSliding ?? expiressAbsoulte ?? DefaultExpireTime;
                 string data = _serializer.Serialize(value);
                 return memcachedClient.Store(StoreMode.Replace, this.GetCacheKey(key), data, time);
             }
@@ -445,7 +445,7 @@ namespace Berry.Cache.Core.Memcached
             if (this.Exists(key))
             {
                 string data = _serializer.Serialize(value);
-                return memcachedClient.Store(StoreMode.Replace, this.GetCacheKey(key), data, expiresIn ?? DefaultExpireTime.TimeOfDay);
+                return memcachedClient.Store(StoreMode.Replace, this.GetCacheKey(key), data, expiresIn ?? DefaultExpireTime);
             }
             else
             {

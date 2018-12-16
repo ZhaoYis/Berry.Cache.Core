@@ -12,11 +12,11 @@ namespace Berry.Cache.Core.Base
         /// <summary>
         /// 默认缓存过期时间
         /// </summary>
-        protected virtual DateTime DefaultExpireTime
+        protected virtual TimeSpan DefaultExpireTime
         {
             get
             {
-                return DateTime.Now.AddMinutes(30);
+                return TimeSpan.FromSeconds(1 * 60 * 30);
             }
         }
 

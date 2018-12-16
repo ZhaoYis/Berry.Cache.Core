@@ -94,7 +94,8 @@ namespace Berry.Cache.Core.Runtime
         /// <returns></returns>
         public bool Add(string key, object value)
         {
-            _cache.Insert(this.GetCacheKey(key), value, null, DefaultExpireTime, System.Web.Caching.Cache.NoSlidingExpiration);
+            DateTime absoluteExpiration = DateTime.Now.AddMilliseconds(DefaultExpireTime.TotalMilliseconds);
+            _cache.Insert(this.GetCacheKey(key), value, null, absoluteExpiration, System.Web.Caching.Cache.NoSlidingExpiration);
             return true;
         }
 
@@ -123,7 +124,7 @@ namespace Berry.Cache.Core.Runtime
         /// <returns></returns>
         public bool Add(string key, object value, TimeSpan? expiresSliding, TimeSpan? expiressAbsoulte)
         {
-            TimeSpan time = expiresSliding ?? expiressAbsoulte ?? DefaultExpireTime.TimeOfDay;
+            TimeSpan time = expiresSliding ?? expiressAbsoulte ?? DefaultExpireTime;
             _cache.Insert(this.GetCacheKey(key), value, null, DateTime.Now.AddMilliseconds(time.TotalMilliseconds), time);
             return true;
         }
@@ -161,7 +162,7 @@ namespace Berry.Cache.Core.Runtime
             }
             else
             {
-                this.Add(key, value, expiresIn, DefaultExpireTime.TimeOfDay);
+                this.Add(key, value, expiresIn, DefaultExpireTime);
             }
             return true;
         }

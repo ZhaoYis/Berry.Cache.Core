@@ -65,7 +65,11 @@
   <ItemGroup>
     <Compile Include="Base\BaseCacheService.cs" />
     <Compile Include="Base\CacheFactory.cs" />
+    <Compile Include="Base\CacheType.cs" />
     <Compile Include="Base\ICacheService.cs" />
+    <Compile Include="Base\IRegisterService.cs" />
+    <Compile Include="Base\Register.cs" />
+    <Compile Include="Base\RegisterService.cs" />
     <Compile Include="Memcached\DefaultMemcachedSerializer.cs" />
     <Compile Include="Memcached\MemcachedCacheService.cs" />
     <Compile Include="Memcached\MemcachedHelper.cs" />

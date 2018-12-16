@@ -95,7 +95,7 @@ namespace Berry.Cache.Core.Redis
         /// <returns></returns>
         public bool Add(string key, object value)
         {
-            return redisHelper.StringSet(this.GetCacheKey(key), value, DefaultExpireTime.TimeOfDay);
+            return redisHelper.StringSet(this.GetCacheKey(key), value, DefaultExpireTime);
         }
 
         /// <summary>
@@ -122,7 +122,7 @@ namespace Berry.Cache.Core.Redis
         /// <returns></returns>
         public bool Add(string key, object value, TimeSpan? expiresSliding, TimeSpan? expiressAbsoulte)
         {
-            return redisHelper.StringSet(key, value, expiresSliding ?? expiressAbsoulte ?? DefaultExpireTime.TimeOfDay);
+            return redisHelper.StringSet(key, value, expiresSliding ?? expiressAbsoulte ?? DefaultExpireTime);
         }
 
         /// <summary>

@@ -10,14 +10,27 @@ namespace Berry.Cache.Core.Base
     public class CacheFactory
     {
         /// <summary>
-        /// 定义通用访问入口
+        /// 默认使用运行时缓存
+        /// </summary>
+        public static CacheType CacheType = CacheType.Runtime;
+
+        /// <summary>
+        /// 定义通用访问入口，默认使用运行时缓存
         /// </summary>
         /// <returns></returns>
         public static ICacheService GetCache()
         {
-            //return RuntimeCacheService.GetCacheInstance();
-            //return RedisCacheService.GetCacheInstance();
-            return MemcachedCacheService.GetCacheInstance();
+            switch (CacheType)
+            {
+                case CacheType.Runtime:
+                    return RuntimeCacheService.GetCacheInstance();
+                case CacheType.Redis:
+                    return RedisCacheService.GetCacheInstance();
+                case CacheType.Memcached:
+                    return MemcachedCacheService.GetCacheInstance();
+                default:
+                    return RuntimeCacheService.GetCacheInstance();
+            }
         }
     }
 }

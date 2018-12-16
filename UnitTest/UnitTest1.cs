@@ -9,6 +9,11 @@ namespace UnitTest
     [TestClass]
     public class UnitTest1
     {
+        public UnitTest1()
+        {
+            IRegisterService service = RegisterService.Start().UseRedisCache();
+        }
+
         [TestMethod]
         public void TestMethod1()
         {
