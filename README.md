@@ -1,6 +1,9 @@
 # Berry.Cache.Core
 项目集成了运行时缓存、Redis、Memcached的实现，对象均序列化成Json以后保存，使用方式简洁，具体使用方式如下：
 
+## 注册
+IRegisterService service = RegisterService.Start().UseRedisCache();
+
 ## 1、缓存字符串
 ```
 string key = "dsx";
