@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using Berry.Cache.Core.Base;
 
 namespace Berry.Cache.Core.Runtime
@@ -17,7 +16,7 @@ namespace Berry.Cache.Core.Runtime
         /// <summary>
         /// 运行时缓存实例
         /// </summary>
-        private static readonly System.Web.Caching.Cache _cache = HttpRuntime.Cache;
+        private static readonly System.Web.Caching.Cache _cache = System.Web.HttpRuntime.Cache;
         /// <summary>
         /// 缓存Key集合
         /// </summary>
@@ -461,7 +460,10 @@ namespace Berry.Cache.Core.Runtime
                 this.Remove(key);
                 return this.Add(key, value);
             }
-            return false;
+            else
+            {
+                return this.Add(key, value);
+            }
         }
 
         /// <summary>
@@ -493,7 +495,10 @@ namespace Berry.Cache.Core.Runtime
                 this.Remove(key);
                 return this.Add(key, value, expiresSliding, expiressAbsoulte);
             }
-            return false;
+            else
+            {
+                return this.Add(key, value, expiresSliding, expiressAbsoulte);
+            }
         }
 
         /// <summary>
@@ -527,7 +532,10 @@ namespace Berry.Cache.Core.Runtime
                 this.Remove(key);
                 return this.Add(key, value, expiresIn, isSliding);
             }
-            return false;
+            else
+            {
+                return this.Add(key, value, expiresIn, isSliding);
+            }
         }
 
         /// <summary>

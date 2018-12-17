@@ -95,7 +95,10 @@ namespace Berry.Cache.Core.MemoryCache
         /// <returns></returns>
         public bool Exists(string key)
         {
-            return _cache.Contains(this.GetCacheKey(key));
+            lock (_lock)
+            {
+                return _cache.Contains(this.GetCacheKey(key));
+            }
         }
 
         /// <summary>
@@ -142,8 +145,7 @@ namespace Berry.Cache.Core.MemoryCache
         {
             return Task.Factory.StartNew(() =>
             {
-                this.Add(key, value);
-                return true;
+                return this.Add(key, value);
             });
         }
 
@@ -179,8 +181,7 @@ namespace Berry.Cache.Core.MemoryCache
         {
             return Task.Factory.StartNew(() =>
             {
-                this.Add(key, value, expiresSliding, expiressAbsoulte);
-                return true;
+                return this.Add(key, value, expiresSliding, expiressAbsoulte);
             });
         }
 
@@ -217,8 +218,7 @@ namespace Berry.Cache.Core.MemoryCache
         {
             return Task.Factory.StartNew(() =>
             {
-                this.Add(key, value, expiresIn, isSliding);
-                return true;
+                return this.Add(key, value, expiresIn, isSliding);
             });
         }
 
@@ -484,7 +484,10 @@ namespace Berry.Cache.Core.MemoryCache
                 this.Remove(key);
                 return this.Add(key, value);
             }
-            return false;
+            else
+            {
+                return this.Add(key, value);
+            }
         }
 
         /// <summary>
@@ -516,7 +519,10 @@ namespace Berry.Cache.Core.MemoryCache
                 this.Remove(key);
                 return this.Add(key, value, expiresSliding, expiressAbsoulte);
             }
-            return false;
+            else
+            {
+                return this.Add(key, value, expiresSliding, expiressAbsoulte);
+            }
         }
 
         /// <summary>
@@ -550,7 +556,10 @@ namespace Berry.Cache.Core.MemoryCache
                 this.Remove(key);
                 return this.Add(key, value, expiresIn, isSliding);
             }
-            return false;
+            else
+            {
+                return this.Add(key, value, expiresIn, isSliding);
+            }
         }
 
         /// <summary>
