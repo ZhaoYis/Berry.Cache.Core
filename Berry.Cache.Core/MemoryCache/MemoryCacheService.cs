@@ -122,7 +122,7 @@ namespace Berry.Cache.Core.MemoryCache
         /// </summary>
         /// <param name="key">缓存Key</param>
         /// <param name="value">缓存Value</param>
-        /// <returns></returns>
+        /// <returns>如果插入成功，则为 true；如果缓存中已存在具有与项相同的键，则为 false。</returns>
         public bool Add(string key, object value)
         {
             lock (_lock)
@@ -140,7 +140,7 @@ namespace Berry.Cache.Core.MemoryCache
         /// </summary>
         /// <param name="key">缓存Key</param>
         /// <param name="value">缓存Value</param>
-        /// <returns></returns>
+        /// <returns>如果插入成功，则为 true；如果缓存中已存在具有与项相同的键，则为 false。</returns>
         public Task<bool> AddAsync(string key, object value)
         {
             return Task.Factory.StartNew(() =>
@@ -156,7 +156,7 @@ namespace Berry.Cache.Core.MemoryCache
         /// <param name="value">缓存Value</param>
         /// <param name="expiresSliding">滑动过期时长（如果在过期时间内有操作，则以当前时间点延长过期时间）</param>
         /// <param name="expiressAbsoulte">绝对过期时长</param>
-        /// <returns></returns>
+        /// <returns>如果插入成功，则为 true；如果缓存中已存在具有与项相同的键，则为 false。</returns>
         public bool Add(string key, object value, TimeSpan? expiresSliding, TimeSpan? expiressAbsoulte)
         {
             lock (_lock)
@@ -176,7 +176,7 @@ namespace Berry.Cache.Core.MemoryCache
         /// <param name="value">缓存Value</param>
         /// <param name="expiresSliding">滑动过期时长（如果在过期时间内有操作，则以当前时间点延长过期时间）</param>
         /// <param name="expiressAbsoulte">绝对过期时长</param>
-        /// <returns></returns>
+        /// <returns>如果插入成功，则为 true；如果缓存中已存在具有与项相同的键，则为 false。</returns>
         public Task<bool> AddAsync(string key, object value, TimeSpan? expiresSliding, TimeSpan? expiressAbsoulte)
         {
             return Task.Factory.StartNew(() =>
@@ -197,13 +197,12 @@ namespace Berry.Cache.Core.MemoryCache
         {
             if (!isSliding)
             {
-                this.Add(key, value);
+                return this.Add(key, value);
             }
             else
             {
-                this.Add(key, value, expiresIn, DefaultExpireTime);
+                return this.Add(key, value, expiresIn, DefaultExpireTime);
             }
-            return true;
         }
 
         /// <summary>

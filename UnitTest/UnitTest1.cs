@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Berry.Cache.Core;
 using Berry.Cache.Core.Base;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -11,7 +10,7 @@ namespace UnitTest
     {
         public UnitTest1()
         {
-            IRegisterService service = RegisterService.Start().UseMemoryCache();
+            IRegisterService service = RegisterService.Start().UseRedisCache();
         }
 
         [TestMethod]
