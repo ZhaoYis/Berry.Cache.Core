@@ -37,5 +37,16 @@
             CacheFactory.CacheType = CacheType.Memcached;
             return service;
         }
+
+        /// <summary>
+        /// 使用MemoryCache缓存
+        /// </summary>
+        /// <param name="service"></param>
+        /// <returns></returns>
+        public static IRegisterService UseMemoryCache(this IRegisterService service)
+        {
+            CacheFactory.CacheType = CacheType.MemoryCache;
+            return service;
+        }
     }
 }

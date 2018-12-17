@@ -16,6 +16,10 @@
         /// <summary>
         /// Memcache
         /// </summary>
-        Memcached
+        Memcached,
+        /// <summary>
+        /// 微软自带MemoryCache
+        /// </summary>
+        MemoryCache
     }
 }

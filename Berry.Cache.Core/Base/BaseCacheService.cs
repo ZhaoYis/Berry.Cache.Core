@@ -10,13 +10,14 @@ namespace Berry.Cache.Core.Base
     {
         #region 字段
         /// <summary>
-        /// 默认缓存过期时间
+        /// 默认缓存过期时间，默认时间在[30,35]之间
         /// </summary>
         protected virtual TimeSpan DefaultExpireTime
         {
             get
             {
-                return TimeSpan.FromSeconds(1 * 60 * 30);
+                int sec = 1 * 60 * 30 + this.GetRandom();
+                return TimeSpan.FromSeconds(sec);
             }
         }
 
@@ -50,6 +51,16 @@ namespace Berry.Cache.Core.Base
         protected virtual string GetCacheKey(string key)
         {
             return string.Format("{0}_{1}", this.DefaultCacheKeyPrefix, key);
+        }
+
+        /// <summary>
+        /// 获取一个随机数
+        /// </summary>
+        /// <returns></returns>
+        private int GetRandom()
+        {
+            Random random = new Random(DateTime.Now.Millisecond);
+            return random.Next(0, 300);
         }
 
         #endregion

@@ -11,7 +11,7 @@ namespace UnitTest
     {
         public UnitTest1()
         {
-            IRegisterService service = RegisterService.Start().UseRedisCache();
+            IRegisterService service = RegisterService.Start().UseMemoryCache();
         }
 
         [TestMethod]

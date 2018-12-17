@@ -1,4 +1,5 @@
 ﻿using Berry.Cache.Core.Memcached;
+using Berry.Cache.Core.MemoryCache;
 using Berry.Cache.Core.Redis;
 using Berry.Cache.Core.Runtime;
 
@@ -28,6 +29,8 @@ namespace Berry.Cache.Core.Base
                     return RedisCacheService.GetCacheInstance();
                 case CacheType.Memcached:
                     return MemcachedCacheService.GetCacheInstance();
+                case CacheType.MemoryCache:
+                    return MemoryCacheService.GetCacheInstance();
                 default:
                     return RuntimeCacheService.GetCacheInstance();
             }
