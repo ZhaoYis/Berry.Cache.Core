@@ -212,6 +212,37 @@ namespace Berry.Cache.Core.Redis
         }
 
         /// <summary>
+        /// 根据指定条件删除缓存（一般为指定Key的前缀或者后缀）
+        /// </summary>
+        /// <param name="func"></param>
+        /// <example>Remove(key => key.StartsWith("_USER"));</example>
+        public void Remove(Func<string, bool> func)
+        {
+            List<string> keys = new List<string>();
+            foreach (string key in redisHelper.GetKeys())
+            {
+                if (func.Invoke(key))
+                {
+                    keys.Add(key);
+                }
+            }
+            this.RemoveAll(keys);
+        }
+
+        /// <summary>
+        /// 根据指定条件删除缓存（一般为指定Key的前缀或者后缀）（异步方式）
+        /// </summary>
+        /// <param name="func"></param>
+        /// <example>Remove(key => key.StartsWith("_USER"));</example>
+        public Task RemoveAsync(Func<string, bool> func)
+        {
+            return Task.Factory.StartNew(() =>
+            {
+                this.Remove(func);
+            });
+        }
+
+        /// <summary>
         /// 批量删除缓存
         /// </summary>
         /// <param name="keys">缓存Key集合</param>
@@ -286,6 +317,45 @@ namespace Berry.Cache.Core.Redis
             return Task.Factory.StartNew(() =>
             {
                 return this.Get<T>(key);
+            });
+        }
+
+        /// <summary>
+        /// 封装缓存写入、获取方法
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key">缓存Key</param>
+        /// <param name="func">获取缓存数据方法</param>
+        /// <param name="expiresIn">到期时间</param>
+        /// <returns></returns>
+        public T Get<T>(string key, Func<T> func, TimeSpan? expiresIn) where T : class
+        {
+            T t = default(T);
+            if (this.Exists(key))
+            {
+                t = this.Get<T>(key);
+            }
+            else
+            {
+                t = func.Invoke();
+                this.Add(key, t, expiresIn);
+            }
+            return t;
+        }
+
+        /// <summary>
+        /// 封装缓存写入、获取方法（异步方式）
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key">缓存Key</param>
+        /// <param name="func">获取缓存数据方法</param>
+        /// <param name="expiresIn">到期时间</param>
+        /// <returns></returns>
+        public Task<T> GetAsync<T>(string key, Func<T> func, TimeSpan? expiresIn) where T : class
+        {
+            return Task.Factory.StartNew(() =>
+            {
+                return this.Get(key, func, expiresIn);
             });
         }
 

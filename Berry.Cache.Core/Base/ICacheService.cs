@@ -100,6 +100,20 @@ namespace Berry.Cache.Core.Base
         Task<bool> RemoveAsync(string key);
 
         /// <summary>
+        /// 根据指定条件删除缓存（一般为指定Key的前缀或者后缀）
+        /// </summary>
+        /// <param name="func"></param>
+        /// <example>Remove(key => key.StartsWith("_USER"));</example>
+        void Remove(Func<string, bool> func);
+
+        /// <summary>
+        /// 根据指定条件删除缓存（一般为指定Key的前缀或者后缀）（异步方式）
+        /// </summary>
+        /// <param name="func"></param>
+        /// <example>Remove(key => key.StartsWith("_USER"));</example>
+        Task RemoveAsync(Func<string, bool> func);
+
+        /// <summary>
         /// 批量删除缓存
         /// </summary>
         /// <param name="keys">缓存Key集合</param>
@@ -141,6 +155,26 @@ namespace Berry.Cache.Core.Base
         /// <param name="key">缓存Key</param>
         /// <returns></returns>
         Task<T> GetAsync<T>(string key) where T : class;
+
+        /// <summary>
+        /// 封装缓存写入、获取方法
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key">缓存Key</param>
+        /// <param name="func">获取缓存数据方法</param>
+        /// <param name="expiresIn">到期时间</param>
+        /// <returns></returns>
+        T Get<T>(string key, Func<T> func, TimeSpan? expiresIn) where T : class;
+
+        /// <summary>
+        /// 封装缓存写入、获取方法（异步方式）
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key">缓存Key</param>
+        /// <param name="func">获取缓存数据方法</param>
+        /// <param name="expiresIn">到期时间</param>
+        /// <returns></returns>
+        Task<T> GetAsync<T>(string key, Func<T> func, TimeSpan? expiresIn) where T : class;
 
         /// <summary>
         /// 获取缓存
