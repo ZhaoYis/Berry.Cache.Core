@@ -35,6 +35,10 @@ namespace Berry.Cache.Core.Memcached
         /// </summary>
         private readonly DefaultMemcachedSerializer _serializer = new DefaultMemcachedSerializer();
 
+        private MemcachedCacheService()
+        {
+        }
+
         static MemcachedCacheService()
         {
             CacheService = new MemcachedCacheService();

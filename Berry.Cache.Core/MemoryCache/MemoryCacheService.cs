@@ -32,6 +32,10 @@ namespace Berry.Cache.Core.MemoryCache
         /// </summary>
         private static readonly ICacheService CacheService = null;
 
+        private MemoryCacheService()
+        {
+        }
+
         static MemoryCacheService()
         {
             CacheService = new MemoryCacheService();

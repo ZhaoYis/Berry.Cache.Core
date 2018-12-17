@@ -27,6 +27,10 @@ namespace Berry.Cache.Core.Runtime
         /// </summary>
         private static readonly ICacheService CacheService = null;
 
+        private RuntimeCacheService()
+        {
+        }
+
         static RuntimeCacheService()
         {
             CacheService = new RuntimeCacheService();

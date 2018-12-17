@@ -21,6 +21,10 @@ namespace Berry.Cache.Core.Redis
         /// </summary>
         private static readonly RedisHelper redisHelper = new RedisHelper();
 
+        private RedisCacheService()
+        {
+        }
+
         static RedisCacheService()
         {
             CacheService = new RedisCacheService();
