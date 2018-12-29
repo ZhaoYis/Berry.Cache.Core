@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Berry.Cache.Core.Base;
 using StackExchange.Redis;
 
 namespace Berry.Cache.Core.Redis

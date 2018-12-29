@@ -482,14 +482,14 @@ namespace Berry.Cache.Core.MemoryCache
         /// <returns></returns>
         public bool Replace(string key, object value)
         {
-            if (this.Exists(key))
+            lock (_lock)
             {
-                this.Remove(key);
-                return this.Add(key, value);
-            }
-            else
-            {
-                return this.Add(key, value);
+                DateTime absoluteExpiration = DateTime.Now.AddMilliseconds(DefaultExpireTime.TotalMilliseconds);
+                CacheItem item = new CacheItem(this.GetCacheKey(key), value);
+                CacheItemPolicy policy = this.CreatePolicy(DefaultExpireTime, absoluteExpiration);
+
+                _cache.Set(item, policy);
+                return true;
             }
         }
 
@@ -517,14 +517,15 @@ namespace Berry.Cache.Core.MemoryCache
         /// <returns></returns>
         public bool Replace(string key, object value, TimeSpan? expiresSliding, TimeSpan? expiressAbsoulte)
         {
-            if (this.Exists(key))
+            lock (_lock)
             {
-                this.Remove(key);
-                return this.Add(key, value, expiresSliding, expiressAbsoulte);
-            }
-            else
-            {
-                return this.Add(key, value, expiresSliding, expiressAbsoulte);
+                expiressAbsoulte = expiressAbsoulte ?? DefaultExpireTime;
+                DateTime absoluteExpiration = DateTime.Now.AddMilliseconds(expiressAbsoulte.Value.TotalMilliseconds);
+                CacheItem item = new CacheItem(this.GetCacheKey(key), value);
+                CacheItemPolicy policy = this.CreatePolicy(expiresSliding, absoluteExpiration);
+
+                _cache.Set(item, policy);
+                return true;
             }
         }
 
@@ -554,14 +555,15 @@ namespace Berry.Cache.Core.MemoryCache
         /// <returns></returns>
         public bool Replace(string key, object value, TimeSpan? expiresIn, bool isSliding = false)
         {
-            if (this.Exists(key))
+            lock (_lock)
             {
-                this.Remove(key);
-                return this.Add(key, value, expiresIn, isSliding);
-            }
-            else
-            {
-                return this.Add(key, value, expiresIn, isSliding);
+                expiresIn = expiresIn ?? DefaultExpireTime;
+                DateTime absoluteExpiration = DateTime.Now.AddMilliseconds(expiresIn.Value.TotalMilliseconds);
+                CacheItem item = new CacheItem(this.GetCacheKey(key), value);
+                CacheItemPolicy policy = this.CreatePolicy(expiresIn, absoluteExpiration);
+
+                _cache.Set(item, policy);
+                return true;
             }
         }
 

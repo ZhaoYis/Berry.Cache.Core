@@ -1,4 +1,6 @@
-﻿namespace Berry.Cache.Core.Base
+﻿using Berry.Cache.Core.Base;
+
+namespace Berry.Cache.Core.RegisterService
 {
     /// <summary>
     /// 具体注册服务

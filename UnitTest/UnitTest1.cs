@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Berry.Cache.Core.Base;
+using Berry.Cache.Core.RegisterService;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace UnitTest

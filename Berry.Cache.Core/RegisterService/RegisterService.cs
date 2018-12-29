@@ -1,4 +1,4 @@
-﻿namespace Berry.Cache.Core.Base
+﻿namespace Berry.Cache.Core.RegisterService
 {
     /// <summary>
     /// 注册服务
@@ -13,7 +13,7 @@
         /// 开始注册
         /// </summary>
         /// <returns></returns>
-        public static RegisterService Start()
+        public static IRegisterService Start()
         {
             return new RegisterService();
         }
